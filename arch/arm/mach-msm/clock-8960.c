@@ -384,7 +384,7 @@ static int set_vdd_dig_8960(struct clk_vdd_class *vdd_class, int level)
 	static const int vdd_uv[] = {
 		[VDD_DIG_NONE]    =       0,
 		[VDD_DIG_LOW]     =  945000,
-		[VDD_DIG_NOMINAL] = 1050000,
+		[VDD_DIG_NOMINAL] = 1100000,
 		[VDD_DIG_HIGH]    = 1150000
 	};
 	return rpm_vreg_set_voltage(RPM_VREG_ID_PM8921_S3, RPM_VREG_VOTER3,
