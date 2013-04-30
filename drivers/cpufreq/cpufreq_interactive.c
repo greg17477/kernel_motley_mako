@@ -36,6 +36,12 @@
 
 static int active_count;
 
+extern void hotplug_boostpulse(void);
+
+/* Default boostpulse frequency */
+#define DEFAULT_BOOSTPULSE_FREQ 1026000
+#define DEFAULT_BOOSTPULSE_DURATION (200 * USEC_PER_MSEC)
+
 struct cpufreq_interactive_cpuinfo {
 	struct timer_list cpu_timer;
 	struct timer_list cpu_slack_timer;
@@ -63,7 +69,7 @@ static spinlock_t speedchange_cpumask_lock;
 static struct mutex gov_lock;
 
 /* Hi speed to bump to from lo speed when load burst (default max) */
-static unsigned int hispeed_freq;
+static unsigned int hispeed_freq = DEFAULT_BOOSTPULSE_FREQ;
 
 /* Go to hi speed when CPU load at or above this value. */
 #define DEFAULT_GO_HISPEED_LOAD 99
@@ -98,7 +104,7 @@ static unsigned long above_hispeed_delay_val = DEFAULT_ABOVE_HISPEED_DELAY;
 /* Non-zero means indefinite speed boost active */
 static int boost_val;
 /* Duration of a boot pulse in usecs */
-static int boostpulse_duration_val = DEFAULT_MIN_SAMPLE_TIME;
+static int boostpulse_duration_val = DEFAULT_BOOSTPULSE_DURATION;
 /* End time of boost pulse in ktime converted to usecs */
 static u64 boostpulse_endtime;
 
@@ -514,8 +520,11 @@ static void cpufreq_interactive_boost(void)
 {
 	int i;
 	int anyboost = 0;
+        int boostcount = 0;
 	unsigned long flags;
 	struct cpufreq_interactive_cpuinfo *pcpu;
+
+        hotplug_boostpulse();
 
 	spin_lock_irqsave(&speedchange_cpumask_lock, flags);
 
@@ -528,6 +537,7 @@ static void cpufreq_interactive_boost(void)
 			pcpu->hispeed_validate_time =
 				ktime_to_us(ktime_get());
 			anyboost = 1;
+                        boostcount++;
 		}
 
 		/*
@@ -537,6 +547,9 @@ static void cpufreq_interactive_boost(void)
 
 		pcpu->floor_freq = hispeed_freq;
 		pcpu->floor_validate_time = ktime_to_us(ktime_get());
+
+                if (boostcount > 1)
+                  break;
 	}
 
 	spin_unlock_irqrestore(&speedchange_cpumask_lock, flags);
