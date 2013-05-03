@@ -1,3 +1,4 @@
+cd $WORKSPACE
 if [ -d "archive" ]
 then
 rm -rf $WORKSPACE/archive
