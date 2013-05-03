@@ -15,4 +15,4 @@ export KBUILD_BUILD_USER=thracemerin
 make -j4
 cp arch/arm/boot/zImage $WORKSPACE/staging/kernel
 cd $WORKSPACE/staging
-zip -r ../archive/m+_anykernel_422_build_$BUILDNO *
+zip -r ../archive/m_plus_anykernel_422_build_$BUILDNO *
