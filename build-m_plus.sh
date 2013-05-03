@@ -9,7 +9,7 @@ export SUBARCH=arm
 export CROSS_COMPILE=../android-toolchain-eabi/bin/arm-eabi-
 make mrproper
 make _m+-exp_defconfig
-export BUILDNO=1
+export BUILDNO=3
 export LOCALVERSION="_m+-exp_build_"$BUILDNO
 export KBUILD_BUILD_USER=thracemerin
 make -j4
