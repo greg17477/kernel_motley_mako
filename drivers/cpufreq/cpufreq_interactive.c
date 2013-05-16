@@ -76,11 +76,7 @@ static unsigned int hispeed_freq = DEFAULT_BOOSTPULSE_FREQ;
 static unsigned long go_hispeed_load = DEFAULT_GO_HISPEED_LOAD;
 
 /* Target load.  Lower values result in higher CPU speeds. */
-<<<<<<< HEAD
-#define DEFAULT_TARGET_LOAD 80
-=======
 #define DEFAULT_TARGET_LOAD 90
->>>>>>> thracemerin/m_plus_exp
 static unsigned int default_target_loads[] = {DEFAULT_TARGET_LOAD};
 static spinlock_t target_loads_lock;
 static unsigned int *target_loads = default_target_loads;
@@ -102,19 +98,11 @@ static unsigned long timer_rate = DEFAULT_TIMER_RATE;
  * Wait this long before raising speed above hispeed, by default a single
  * timer interval.
  */
-<<<<<<< HEAD
-#define DEFAULT_ABOVE_HISPEED_DELAY (10 * USEC_PER_MSEC)
-static unsigned long above_hispeed_delay_val = DEFAULT_ABOVE_HISPEED_DELAY;
-
-/* Non-zero means indefinite speed boost active */
-static int boost_val = 0;
-=======
 #define DEFAULT_ABOVE_HISPEED_DELAY DEFAULT_TIMER_RATE
 static unsigned long above_hispeed_delay_val = DEFAULT_ABOVE_HISPEED_DELAY;
 
 /* Non-zero means indefinite speed boost active */
 static int boost_val;
->>>>>>> thracemerin/m_plus_exp
 /* Duration of a boot pulse in usecs */
 static int boostpulse_duration_val = DEFAULT_BOOSTPULSE_DURATION;
 /* End time of boost pulse in ktime converted to usecs */
@@ -532,39 +520,24 @@ static void cpufreq_interactive_boost(void)
 {
 	int i;
 	int anyboost = 0;
-<<<<<<< HEAD
-	int boostcount = 0;
-	unsigned long flags;
-	struct cpufreq_interactive_cpuinfo *pcpu;
-
-	hotplug_boostpulse();
-=======
         int boostcount = 0;
 	unsigned long flags;
 	struct cpufreq_interactive_cpuinfo *pcpu;
 
         hotplug_boostpulse();
->>>>>>> thracemerin/m_plus_exp
 
 	spin_lock_irqsave(&speedchange_cpumask_lock, flags);
 
 	for_each_online_cpu(i) {
 		pcpu = &per_cpu(cpuinfo, i);
-<<<<<<< HEAD
-=======
 
->>>>>>> thracemerin/m_plus_exp
 		if (pcpu->target_freq < hispeed_freq) {
 			pcpu->target_freq = hispeed_freq;
 			cpumask_set_cpu(i, &speedchange_cpumask);
 			pcpu->hispeed_validate_time =
 				ktime_to_us(ktime_get());
 			anyboost = 1;
-<<<<<<< HEAD
-			boostcount++;
-=======
                         boostcount++;
->>>>>>> thracemerin/m_plus_exp
 		}
 
 		/*
@@ -575,13 +548,8 @@ static void cpufreq_interactive_boost(void)
 		pcpu->floor_freq = hispeed_freq;
 		pcpu->floor_validate_time = ktime_to_us(ktime_get());
 
-<<<<<<< HEAD
-		if (boostcount > 1)
-			break;
-=======
                 if (boostcount > 1)
                   break;
->>>>>>> thracemerin/m_plus_exp
 	}
 
 	spin_unlock_irqrestore(&speedchange_cpumask_lock, flags);

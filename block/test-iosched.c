@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-/* Copyright (c) 2012, Code Aurora Forum. All rights reserved.
-=======
 /* Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
->>>>>>> thracemerin/m_plus_exp
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -47,22 +43,6 @@ static DEFINE_SPINLOCK(blk_dev_test_list_lock);
 static LIST_HEAD(blk_dev_test_list);
 static struct test_data *ptd;
 
-<<<<<<< HEAD
-/* Get the request after `test_rq' in the test requests list */
-static struct test_request *
-latter_test_request(struct request_queue *q,
-				 struct test_request *test_rq)
-{
-	struct test_data *td = q->elevator->elevator_data;
-
-	if (test_rq->queuelist.next == &td->test_queue)
-		return NULL;
-	return list_entry(test_rq->queuelist.next, struct test_request,
-			  queuelist);
-}
-=======
->>>>>>> thracemerin/m_plus_exp
-
 /**
  * test_iosched_get_req_queue() - returns the request queue
  * served by the scheduler
@@ -84,37 +64,16 @@ void test_iosched_mark_test_completion(void)
 {
 	if (!ptd)
 		return;
-<<<<<<< HEAD
-=======
 	test_pr_info("%s: mark test is completed, test_count=%d,",
 			__func__, ptd->test_count);
 	test_pr_info("%s: reinsert_count=%d, dispatched_count=%d",
 		     __func__, ptd->reinsert_count, ptd->dispatched_count);
->>>>>>> thracemerin/m_plus_exp
 
 	ptd->test_state = TEST_COMPLETED;
 	wake_up(&ptd->wait_q);
 }
 EXPORT_SYMBOL(test_iosched_mark_test_completion);
 
-<<<<<<< HEAD
-/* Check if all the queued test requests were completed */
-static void check_test_completion(void)
-{
-	struct test_request *test_rq;
-	struct request *rq;
-
-	list_for_each_entry(test_rq, &ptd->test_queue, queuelist) {
-		rq = test_rq->rq;
-		if (!test_rq->req_completed)
-			return;
-	}
-
-	test_pr_info("%s: Test is completed", __func__);
-
-	test_iosched_mark_test_completion();
-}
-=======
 /**
  *  check_test_completion() - Check if all the queued test
  *  requests were completed
@@ -155,7 +114,6 @@ exit:
 	return;
 }
 EXPORT_SYMBOL(check_test_completion);
->>>>>>> thracemerin/m_plus_exp
 
 /*
  * A callback to be called per bio completion.
@@ -165,10 +123,6 @@ static void end_test_bio(struct bio *bio, int err)
 {
 	if (err)
 		clear_bit(BIO_UPTODATE, &bio->bi_flags);
-<<<<<<< HEAD
-
-=======
->>>>>>> thracemerin/m_plus_exp
 	bio_put(bio);
 }
 
@@ -184,11 +138,7 @@ static void end_test_req(struct request *rq, int err)
 	test_rq = (struct test_request *)rq->elv.priv[0];
 	BUG_ON(!test_rq);
 
-<<<<<<< HEAD
-	test_pr_info("%s: request %d completed, err=%d",
-=======
 	test_pr_debug("%s: request %d completed, err=%d",
->>>>>>> thracemerin/m_plus_exp
 	       __func__, test_rq->req_id, err);
 
 	test_rq->req_completed = true;
@@ -282,14 +232,10 @@ int test_iosched_add_unique_test_req(int is_err_expcted,
 		"%s: added request %d to the test requests list, type = %d",
 		__func__, test_rq->req_id, req_unique);
 
-<<<<<<< HEAD
-	list_add_tail(&test_rq->queuelist, &ptd->test_queue);
-=======
 	spin_lock_irq(ptd->req_q->queue_lock);
 	list_add_tail(&test_rq->queuelist, &ptd->test_queue);
 	ptd->test_count++;
 	spin_unlock_irq(ptd->req_q->queue_lock);
->>>>>>> thracemerin/m_plus_exp
 
 	return 0;
 }
@@ -321,12 +267,7 @@ static void fill_buf_with_pattern(int *buf, int num_bytes, int pattern)
 }
 
 /**
-<<<<<<< HEAD
- * test_iosched_add_wr_rd_test_req() - Create and queue a
- * read/write request.
-=======
  * test_iosched_create_test_req() - Create a read/write request.
->>>>>>> thracemerin/m_plus_exp
  * @is_err_expcted:	A flag to indicate if this request
  *			should succeed or not
  * @direction:		READ/WRITE
@@ -350,17 +291,6 @@ static void fill_buf_with_pattern(int *buf, int num_bytes, int pattern)
  * request memory is freed at the end of the test and the
  * allocated BIO memory is freed by end_test_bio.
  */
-<<<<<<< HEAD
-int test_iosched_add_wr_rd_test_req(int is_err_expcted,
-		      int direction, int start_sec,
-		      int num_bios, int pattern, rq_end_io_fn *end_req_io)
-{
-	struct request *rq = NULL;
-	struct test_request *test_rq = NULL;
-	int rw_flags = 0;
-	int buf_size = 0;
-	int ret = 0, i = 0;
-=======
 struct test_request *test_iosched_create_test_req(int is_err_expcted,
 		      int direction, int start_sec,
 		      int num_bios, int pattern, rq_end_io_fn *end_req_io)
@@ -369,38 +299,25 @@ struct test_request *test_iosched_create_test_req(int is_err_expcted,
 	struct test_request *test_rq;
 	int rw_flags, buf_size;
 	int ret = 0, i;
->>>>>>> thracemerin/m_plus_exp
 	unsigned int *bio_ptr = NULL;
 	struct bio *bio = NULL;
 
 	if (!ptd)
-<<<<<<< HEAD
-		return -ENODEV;
-=======
 		return NULL;
->>>>>>> thracemerin/m_plus_exp
 
 	rw_flags = direction;
 
 	rq = blk_get_request(ptd->req_q, rw_flags, GFP_KERNEL);
 	if (!rq) {
 		test_pr_err("%s: Failed to allocate a request", __func__);
-<<<<<<< HEAD
-		return -ENODEV;
-=======
 		return NULL;
->>>>>>> thracemerin/m_plus_exp
 	}
 
 	test_rq = kzalloc(sizeof(struct test_request), GFP_KERNEL);
 	if (!test_rq) {
 		test_pr_err("%s: Failed to allocate test request", __func__);
 		blk_put_request(rq);
-<<<<<<< HEAD
-		return -ENODEV;
-=======
 		return NULL;
->>>>>>> thracemerin/m_plus_exp
 	}
 
 	buf_size = sizeof(unsigned int) * BIO_U32_SIZE * num_bios;
@@ -436,10 +353,7 @@ struct test_request *test_iosched_create_test_req(int is_err_expcted,
 		rq->end_io = end_test_req;
 	rq->__sector = start_sec;
 	rq->cmd_type |= REQ_TYPE_FS;
-<<<<<<< HEAD
-=======
 	rq->cmd_flags |= REQ_SORTED;
->>>>>>> thracemerin/m_plus_exp
 
 	if (rq->bio) {
 		rq->bio->bi_sector = start_sec;
@@ -455,21 +369,6 @@ struct test_request *test_iosched_create_test_req(int is_err_expcted,
 	test_rq->req_completed = false;
 	test_rq->req_result = -EINVAL;
 	test_rq->rq = rq;
-<<<<<<< HEAD
-	test_rq->is_err_expected = is_err_expcted;
-	rq->elv.priv[0] = (void *)test_rq;
-
-	test_pr_debug(
-		"%s: added request %d to the test requests list, buf_size=%d",
-		__func__, test_rq->req_id, buf_size);
-
-	list_add_tail(&test_rq->queuelist, &ptd->test_queue);
-
-	return 0;
-err:
-	blk_put_request(rq);
-	kfree(test_rq->bios_buffer);
-=======
 	if (ptd->test_info.get_rq_disk_fn)
 		test_rq->rq->rq_disk = ptd->test_info.get_rq_disk_fn();
 	test_rq->is_err_expected = is_err_expcted;
@@ -530,7 +429,6 @@ int test_iosched_add_wr_rd_test_req(int is_err_expcted,
 		spin_unlock_irq(ptd->req_q->queue_lock);
 		return 0;
 	}
->>>>>>> thracemerin/m_plus_exp
 	return -ENODEV;
 }
 EXPORT_SYMBOL(test_iosched_add_wr_rd_test_req);
@@ -593,14 +491,6 @@ static int compare_buffer_to_pattern(struct test_request *test_rq)
 static int check_test_result(struct test_data *td)
 {
 	struct test_request *test_rq;
-<<<<<<< HEAD
-	struct request *rq;
-	int res = 0;
-	static int run;
-
-	list_for_each_entry(test_rq, &ptd->test_queue, queuelist) {
-		rq = test_rq->rq;
-=======
 	int res = 0;
 	static int run;
 
@@ -613,7 +503,6 @@ static int check_test_result(struct test_data *td)
 					__func__, test_rq->req_id);
 			continue;
 		}
->>>>>>> thracemerin/m_plus_exp
 		if (!test_rq->req_completed) {
 			test_pr_err("%s: rq %d not completed", __func__,
 				    test_rq->req_id);
@@ -686,47 +575,25 @@ static int run_test(struct test_data *td)
 		return ret;
 	}
 
-<<<<<<< HEAD
-	/*
-	 * Set the next_req pointer to the first request in the test requests
-	 * list
-	 */
-	if (!list_empty(&td->test_queue))
-		td->next_req = list_entry(td->test_queue.next,
-					  struct test_request, queuelist);
-	__blk_run_queue(td->req_q);
-=======
 	blk_run_queue(td->req_q);
->>>>>>> thracemerin/m_plus_exp
 
 	return 0;
 }
 
-<<<<<<< HEAD
-/* Free the allocated test requests, their requests and BIOs buffer */
-static void free_test_requests(struct test_data *td)
-=======
 /*
  * free_test_queue() - Free all allocated test requests in the given test_queue:
  * free their requests and BIOs buffer
  * @test_queue		the test queue to be freed
  */
 static void free_test_queue(struct list_head *test_queue)
->>>>>>> thracemerin/m_plus_exp
 {
 	struct test_request *test_rq;
 	struct bio *bio;
 
-<<<<<<< HEAD
-	while (!list_empty(&td->test_queue)) {
-		test_rq = list_entry(td->test_queue.next, struct test_request,
-				     queuelist);
-=======
 	while (!list_empty(test_queue)) {
 		test_rq = list_entry(test_queue->next, struct test_request,
 				queuelist);
 
->>>>>>> thracemerin/m_plus_exp
 		list_del_init(&test_rq->queuelist);
 		/*
 		 * If the request was not completed we need to free its BIOs
@@ -735,11 +602,7 @@ static void free_test_queue(struct list_head *test_queue)
 		if (!test_rq->req_completed) {
 			test_pr_info(
 				"%s: Freeing memory of an uncompleted request",
-<<<<<<< HEAD
-				__func__);
-=======
 					__func__);
->>>>>>> thracemerin/m_plus_exp
 			list_del_init(&test_rq->rq->queuelist);
 			while ((bio = test_rq->rq->bio) != NULL) {
 				test_rq->rq->bio = bio->bi_next;
@@ -753,10 +616,6 @@ static void free_test_queue(struct list_head *test_queue)
 }
 
 /*
-<<<<<<< HEAD
- * Do post test operations.
- * Free the allocated test requests, their requests and BIOs buffer.
-=======
  * free_test_requests() - Free all allocated test requests in
  * all test queues in given test_data.
  * @td		The test_data struct whos test requests will be
@@ -790,7 +649,6 @@ static void free_test_requests(struct test_data *td)
  * test requests, their requests and BIOs buffer.
  * @td		The test_data struct for the test that has
  *		ended.
->>>>>>> thracemerin/m_plus_exp
  */
 static int post_test(struct test_data *td)
 {
@@ -831,11 +689,8 @@ static unsigned int get_timeout_msec(struct test_data *td)
 
 /**
  * test_iosched_start_test() - Prepares and runs the test.
-<<<<<<< HEAD
-=======
  * The members test_duration and test_byte_count of the input
  * parameter t_info are modified by this function.
->>>>>>> thracemerin/m_plus_exp
  * @t_info:	the current test testcase and callbacks
  *		functions
  *
@@ -883,10 +738,6 @@ int test_iosched_start_test(struct test_info *t_info)
 
 		memcpy(&ptd->test_info, t_info, sizeof(struct test_info));
 
-<<<<<<< HEAD
-		ptd->next_req = NULL;
-=======
->>>>>>> thracemerin/m_plus_exp
 		ptd->test_result = TEST_NO_RESULT;
 		ptd->num_of_write_bios = 0;
 
@@ -908,11 +759,7 @@ int test_iosched_start_test(struct test_info *t_info)
 			test_name = ptd->test_info.get_test_case_str_fn(ptd);
 		else
 			test_name = "Unknown testcase";
-<<<<<<< HEAD
-		test_pr_info("%s: Starting test %s\n", __func__, test_name);
-=======
 		test_pr_info("%s: Starting test %s", __func__, test_name);
->>>>>>> thracemerin/m_plus_exp
 
 		ret = prepare_test(ptd);
 		if (ret) {
@@ -921,10 +768,7 @@ int test_iosched_start_test(struct test_info *t_info)
 			goto error;
 		}
 
-<<<<<<< HEAD
-=======
 		ptd->test_info.test_duration = jiffies;
->>>>>>> thracemerin/m_plus_exp
 		ret = run_test(ptd);
 		if (ret) {
 			test_pr_err("%s: failed to run the test\n", __func__);
@@ -934,11 +778,8 @@ int test_iosched_start_test(struct test_info *t_info)
 		test_pr_info("%s: Waiting for the test completion", __func__);
 
 		wait_event(ptd->wait_q, ptd->test_state == TEST_COMPLETED);
-<<<<<<< HEAD
-=======
 		t_info->test_duration = ptd->test_info.test_duration;
 		t_info->test_byte_count = ptd->test_info.test_byte_count;
->>>>>>> thracemerin/m_plus_exp
 		del_timer_sync(&ptd->timeout_timer);
 
 		ret = check_test_result(ptd);
@@ -958,11 +799,7 @@ int test_iosched_start_test(struct test_info *t_info)
 		 * Wakeup the queue thread to fetch FS requests that might got
 		 * postponded due to the test
 		 */
-<<<<<<< HEAD
-		__blk_run_queue(ptd->req_q);
-=======
 		blk_run_queue(ptd->req_q);
->>>>>>> thracemerin/m_plus_exp
 
 		if (ptd->ignore_round)
 			test_pr_info(
@@ -1146,8 +983,6 @@ static void test_merged_requests(struct request_queue *q,
 {
 	list_del_init(&next->queuelist);
 }
-<<<<<<< HEAD
-=======
 /*
  * test_dispatch_from(): Dispatch request from @queue to the @dispatched_queue.
  * Also update th dispatched_count counter.
@@ -1188,7 +1023,6 @@ static int test_dispatch_from(struct request_queue *q,
 err:
 	return ret;
 }
->>>>>>> thracemerin/m_plus_exp
 
 /*
  * Dispatch a test request in case there is a running test Otherwise, dispatch
@@ -1198,10 +1032,7 @@ static int test_dispatch_requests(struct request_queue *q, int force)
 {
 	struct test_data *td = q->elevator->elevator_data;
 	struct request *rq = NULL;
-<<<<<<< HEAD
-=======
 	int ret = 0;
->>>>>>> thracemerin/m_plus_exp
 
 	switch (td->test_state) {
 	case TEST_IDLE:
@@ -1210,21 +1041,6 @@ static int test_dispatch_requests(struct request_queue *q, int force)
 					queuelist);
 			list_del_init(&rq->queuelist);
 			elv_dispatch_sort(q, rq);
-<<<<<<< HEAD
-			return 1;
-		}
-		break;
-	case TEST_RUNNING:
-		if (td->next_req) {
-			rq = td->next_req->rq;
-			td->next_req =
-				latter_test_request(td->req_q, td->next_req);
-			if (!rq)
-				return 0;
-			print_req(rq);
-			elv_dispatch_sort(q, rq);
-			return 1;
-=======
 			ret = 1;
 			goto exit;
 		}
@@ -1249,23 +1065,15 @@ static int test_dispatch_requests(struct request_queue *q, int force)
 					__func__, ptd->test_count);
 			ret = 1;
 			goto exit;
->>>>>>> thracemerin/m_plus_exp
 		}
 		break;
 	case TEST_COMPLETED:
 	default:
-<<<<<<< HEAD
-		return 0;
-	}
-
-	return 0;
-=======
 		break;
 	}
 
 exit:
 	return ret;
->>>>>>> thracemerin/m_plus_exp
 }
 
 static void test_add_request(struct request_queue *q, struct request *rq)
@@ -1318,12 +1126,9 @@ static void *test_init_queue(struct request_queue *q)
 	memset((void *)ptd, 0, sizeof(struct test_data));
 	INIT_LIST_HEAD(&ptd->queue);
 	INIT_LIST_HEAD(&ptd->test_queue);
-<<<<<<< HEAD
-=======
 	INIT_LIST_HEAD(&ptd->dispatched_queue);
 	INIT_LIST_HEAD(&ptd->reinsert_queue);
 	INIT_LIST_HEAD(&ptd->urgent_queue);
->>>>>>> thracemerin/m_plus_exp
 	init_waitqueue_head(&ptd->wait_q);
 	ptd->req_q = q;
 
@@ -1358,9 +1163,6 @@ static void test_exit_queue(struct elevator_queue *e)
 	kfree(td);
 }
 
-<<<<<<< HEAD
-static struct elevator_type elevator_test_iosched = {
-=======
 /**
  * test_get_test_data() - Returns a pointer to the test_data
  * struct which keeps the current test data.
@@ -1434,7 +1236,6 @@ exit:
 
 static struct elevator_type elevator_test_iosched = {
 
->>>>>>> thracemerin/m_plus_exp
 	.ops = {
 		.elevator_merge_req_fn = test_merged_requests,
 		.elevator_dispatch_fn = test_dispatch_requests,
@@ -1443,11 +1244,8 @@ static struct elevator_type elevator_test_iosched = {
 		.elevator_latter_req_fn = test_latter_request,
 		.elevator_init_fn = test_init_queue,
 		.elevator_exit_fn = test_exit_queue,
-<<<<<<< HEAD
-=======
 		.elevator_is_urgent_fn = test_urgent_pending,
 		.elevator_reinsert_req_fn = test_reinsert_req,
->>>>>>> thracemerin/m_plus_exp
 	},
 	.elevator_name = "test-iosched",
 	.elevator_owner = THIS_MODULE,

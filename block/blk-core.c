@@ -29,10 +29,7 @@
 #include <linux/fault-inject.h>
 #include <linux/list_sort.h>
 #include <linux/delay.h>
-<<<<<<< HEAD
-=======
 #include <linux/ratelimit.h>
->>>>>>> thracemerin/m_plus_exp
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/block.h>
@@ -301,24 +298,18 @@ EXPORT_SYMBOL(blk_sync_queue);
  * Description:
  *    See @blk_run_queue. This variant must be called with the queue lock
  *    held and interrupts disabled.
-<<<<<<< HEAD
-=======
  *    Device driver will be notified of an urgent request
  *    pending under the following conditions:
  *    1. The driver and the current scheduler support urgent reques handling
  *    2. There is an urgent request pending in the scheduler
  *    3. There isn't already an urgent request in flight, meaning previously
  *       notified urgent request completed (!q->notified_urgent)
->>>>>>> thracemerin/m_plus_exp
  */
 void __blk_run_queue(struct request_queue *q)
 {
 	if (unlikely(blk_queue_stopped(q)))
 		return;
 
-<<<<<<< HEAD
-	q->request_fn(q);
-=======
 	if (!q->notified_urgent &&
 		q->elevator->type->ops.elevator_is_urgent_fn &&
 		q->urgent_request_fn &&
@@ -327,7 +318,6 @@ void __blk_run_queue(struct request_queue *q)
 		q->urgent_request_fn(q);
 	} else
 		q->request_fn(q);
->>>>>>> thracemerin/m_plus_exp
 }
 EXPORT_SYMBOL(__blk_run_queue);
 
@@ -1094,8 +1084,6 @@ void blk_requeue_request(struct request_queue *q, struct request *rq)
 }
 EXPORT_SYMBOL(blk_requeue_request);
 
-<<<<<<< HEAD
-=======
 /**
  * blk_reinsert_request() - Insert a request back to the scheduler
  * @q:		request queue
@@ -1140,7 +1128,6 @@ bool blk_reinsert_req_sup(struct request_queue *q)
 }
 EXPORT_SYMBOL(blk_reinsert_req_sup);
 
->>>>>>> thracemerin/m_plus_exp
 static void add_acct_request(struct request_queue *q, struct request *rq,
 			     int where)
 {
@@ -2144,10 +2131,6 @@ struct request *blk_fetch_request(struct request_queue *q)
 	struct request *rq;
 
 	rq = blk_peek_request(q);
-<<<<<<< HEAD
-	if (rq)
-		blk_start_request(rq);
-=======
 	if (rq) {
 		if (rq->cmd_flags & REQ_URGENT) {
 			WARN_ON(q->dispatched_urgent);
@@ -2155,7 +2138,6 @@ struct request *blk_fetch_request(struct request_queue *q)
 		}
 		blk_start_request(rq);
 	}
->>>>>>> thracemerin/m_plus_exp
 	return rq;
 }
 EXPORT_SYMBOL(blk_fetch_request);
@@ -2222,17 +2204,11 @@ bool blk_update_request(struct request *req, int error, unsigned int nr_bytes)
 			error_type = "I/O";
 			break;
 		}
-<<<<<<< HEAD
-		printk(KERN_ERR "end_request: %s error, dev %s, sector %llu\n",
-		       error_type, req->rq_disk ? req->rq_disk->disk_name : "?",
-		       (unsigned long long)blk_rq_pos(req));
-=======
 		printk_ratelimited(
 			KERN_ERR "end_request: %s error, dev %s, sector %llu\n",
 			error_type,
 			req->rq_disk ? req->rq_disk->disk_name : "?",
 			(unsigned long long)blk_rq_pos(req));
->>>>>>> thracemerin/m_plus_exp
 	}
 
 	blk_account_io_completion(req, nr_bytes);
