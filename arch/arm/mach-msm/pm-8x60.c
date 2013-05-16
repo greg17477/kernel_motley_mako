@@ -686,6 +686,10 @@ int msm_pm_idle_prepare(struct cpuidle_device *dev,
 
 		switch (mode) {
 		case MSM_PM_SLEEP_MODE_POWER_COLLAPSE:
+<<<<<<< HEAD
+=======
+		case MSM_PM_SLEEP_MODE_RETENTION:
+>>>>>>> thracemerin/m_plus_exp
 			if (!allow)
 				break;
 
@@ -705,6 +709,7 @@ int msm_pm_idle_prepare(struct cpuidle_device *dev,
 			}
 			/* fall through */
 
+<<<<<<< HEAD
 		case MSM_PM_SLEEP_MODE_RETENTION:
 			if (!allow)
 				break;
@@ -714,6 +719,8 @@ int msm_pm_idle_prepare(struct cpuidle_device *dev,
 			}
 			/* fall through */
 
+=======
+>>>>>>> thracemerin/m_plus_exp
 		case MSM_PM_SLEEP_MODE_WAIT_FOR_INTERRUPT:
 			if (!allow)
 				break;

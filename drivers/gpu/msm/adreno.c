@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2002,2007-2012, Code Aurora Forum. All rights reserved.
+=======
+/* Copyright (c) 2002,2007-2012, The Linux Foundation. All rights reserved.
+>>>>>>> thracemerin/m_plus_exp
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -296,6 +300,11 @@ static void adreno_iommu_setstate(struct kgsl_device *device,
 							&reg_map_array);
 
 	context = idr_find(&device->context_idr, context_id);
+<<<<<<< HEAD
+=======
+	if (context == NULL)
+		return;
+>>>>>>> thracemerin/m_plus_exp
 	adreno_ctx = context->devctxt;
 
 	reg_map_desc = reg_map_array;
@@ -458,6 +467,11 @@ static void adreno_gpummu_setstate(struct kgsl_device *device,
 	 */
 	if (!kgsl_cff_dump_enable && adreno_dev->drawctxt_active) {
 		context = idr_find(&device->context_idr, context_id);
+<<<<<<< HEAD
+=======
+		if (context == NULL)
+			return;
+>>>>>>> thracemerin/m_plus_exp
 		adreno_ctx = context->devctxt;
 
 		if (flags & KGSL_MMUFLAGS_PTUPDATE) {
@@ -1368,7 +1382,11 @@ static void adreno_mark_context_status(struct kgsl_device *device,
 			adreno_context->flags |= CTXT_FLAGS_GPU_HANG;
 		} else if (KGSL_CTX_STAT_GUILTY_CONTEXT_RESET_EXT !=
 			context->reset_status) {
+<<<<<<< HEAD
 			if (adreno_context->flags & (CTXT_FLAGS_GPU_HANG ||
+=======
+			if (adreno_context->flags & (CTXT_FLAGS_GPU_HANG |
+>>>>>>> thracemerin/m_plus_exp
 				CTXT_FLAGS_GPU_HANG_RECOVERED))
 				context->reset_status =
 				KGSL_CTX_STAT_GUILTY_CONTEXT_RESET_EXT;
@@ -1642,6 +1660,14 @@ adreno_recover_hang(struct kgsl_device *device,
 			KGSL_MEMSTORE_OFFSET(KGSL_MEMSTORE_GLOBAL,
 			eoptimestamp),
 			rb->timestamp[KGSL_MEMSTORE_GLOBAL]);
+<<<<<<< HEAD
+=======
+
+	/* switch to NULL ctxt */
+	if (adreno_dev->drawctxt_active != NULL)
+		adreno_drawctxt_switch(adreno_dev, NULL, 0);
+
+>>>>>>> thracemerin/m_plus_exp
 done:
 	adreno_set_max_ts_for_bad_ctxs(device);
 	adreno_mark_context_status(device, ret);
@@ -2268,6 +2294,10 @@ unsigned int adreno_hang_detect(struct kgsl_device *device,
 	unsigned int curr_reg_val[hang_detect_regs_count];
 	unsigned int hang_detected = 1;
 	unsigned int i;
+<<<<<<< HEAD
+=======
+	static unsigned long next_hang_detect_time;
+>>>>>>> thracemerin/m_plus_exp
 
 	if (!adreno_dev->fast_hang_detect)
 		return 0;
@@ -2291,6 +2321,21 @@ unsigned int adreno_hang_detect(struct kgsl_device *device,
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Time interval between hang detection should be KGSL_TIMEOUT_PART
+	 * or more, if next hang detection is requested < KGSL_TIMEOUT_PART
+	 * from the last time do nothing.
+	 */
+	if ((next_hang_detect_time) &&
+		(time_before(jiffies, next_hang_detect_time)))
+			return 0;
+	else
+		next_hang_detect_time = (jiffies +
+			msecs_to_jiffies(KGSL_TIMEOUT_PART-1));
+
+>>>>>>> thracemerin/m_plus_exp
 	for (i = 0; i < hang_detect_regs_count; i++) {
 		adreno_regread(device, hang_detect_regs[i],
 					   &curr_reg_val[i]);
@@ -2416,9 +2461,12 @@ static int adreno_waittimestamp(struct kgsl_device *device,
 	do {
 		long status;
 
+<<<<<<< HEAD
 		if (wait > (msecs - time_elapsed))
 			wait = msecs - time_elapsed;
 
+=======
+>>>>>>> thracemerin/m_plus_exp
 		/*
 		 * if the timestamp happens while we're not
 		 * waiting, there's a chance that an interrupt
@@ -2470,6 +2518,7 @@ static int adreno_waittimestamp(struct kgsl_device *device,
 			ret = (status > 0) ? 0 : (int) status;
 			break;
 		}
+<<<<<<< HEAD
 
 		time_elapsed += wait;
 
@@ -2478,6 +2527,19 @@ static int adreno_waittimestamp(struct kgsl_device *device,
 		 * KGSL_TIMEOUT_PART interval
 		 */
 		wait = KGSL_TIMEOUT_PART;
+=======
+		time_elapsed += wait;
+
+		/*
+		 * We want to wait the floor of KGSL_TIMEOUT_PART
+		 * and (msecs - time_elapsed).
+		 */
+
+		if (KGSL_TIMEOUT_PART < (msecs - time_elapsed))
+			wait = KGSL_TIMEOUT_PART;
+		else
+			wait = (msecs - time_elapsed);
+>>>>>>> thracemerin/m_plus_exp
 
 	} while (!msecs || time_elapsed < msecs);
 

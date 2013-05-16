@@ -373,7 +373,11 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks -mno-unaligned-access \
+<<<<<<< HEAD
 		   -mcpu=cortex-a9 -march=armv7-a -mtune=cortex-a15 -mfpu=neon-vfpv4 -funsafe-math-optimizations \
+=======
+		   -mcpu=cortex-a9 -march=armv7-a -mfpu=neon-vfpv4 -funsafe-math-optimizations \
+>>>>>>> thracemerin/m_plus_exp
 		   -fsingle-precision-constant -fpredictive-commoning -fipa-cp-clone \
 		   -fgcse-after-reload -ftree-vectorize -pipe \
 		   -funswitch-loops -floop-interchange \

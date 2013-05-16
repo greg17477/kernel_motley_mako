@@ -99,13 +99,21 @@ static struct msm_bus_vectors grp3d_nominal_high_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
+<<<<<<< HEAD
 		.ib = KGSL_CONVERT_TO_MBPS(4264),
+=======
+		.ib = KGSL_CONVERT_TO_MBPS(2656),
+>>>>>>> thracemerin/m_plus_exp
 	},
 	{
 		.src = MSM_BUS_MASTER_GRAPHICS_3D_PORT1,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
+<<<<<<< HEAD
 		.ib = KGSL_CONVERT_TO_MBPS(4264),
+=======
+		.ib = KGSL_CONVERT_TO_MBPS(2656),
+>>>>>>> thracemerin/m_plus_exp
 	},
 };
 
@@ -114,13 +122,21 @@ static struct msm_bus_vectors grp3d_max_vectors[] = {
 		.src = MSM_BUS_MASTER_GRAPHICS_3D,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
+<<<<<<< HEAD
 		.ib = KGSL_CONVERT_TO_MBPS(5290),
+=======
+		.ib = KGSL_CONVERT_TO_MBPS(4264),
+>>>>>>> thracemerin/m_plus_exp
 	},
 	{
 		.src = MSM_BUS_MASTER_GRAPHICS_3D_PORT1,
 		.dst = MSM_BUS_SLAVE_EBI_CH0,
 		.ab = 0,
+<<<<<<< HEAD
 		.ib = KGSL_CONVERT_TO_MBPS(5290),
+=======
+		.ib = KGSL_CONVERT_TO_MBPS(4264),
+>>>>>>> thracemerin/m_plus_exp
 	},
 };
 
@@ -197,14 +213,24 @@ static struct kgsl_device_iommu_data kgsl_3d0_iommu_data[] = {
 static struct kgsl_device_platform_data kgsl_3d0_pdata = {
 	.pwrlevel = {
 		{
+<<<<<<< HEAD
 			.gpu_freq = 487500000,
+=======
+			.gpu_freq = 400000000,
+>>>>>>> thracemerin/m_plus_exp
 			.bus_freq = 4,
 			.io_fraction = 0,
 		},
 		{
+<<<<<<< HEAD
 			.gpu_freq = 400000000,
 			.bus_freq = 4,
 			.io_fraction = 0,
+=======
+			.gpu_freq = 325000000,
+			.bus_freq = 3,
+			.io_fraction = 33,
+>>>>>>> thracemerin/m_plus_exp
 		},
 		{
 			.gpu_freq = 200000000,

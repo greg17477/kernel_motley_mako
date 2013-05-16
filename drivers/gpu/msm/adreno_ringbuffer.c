@@ -52,9 +52,16 @@ void adreno_ringbuffer_submit(struct adreno_ringbuffer *rb)
 	adreno_regwrite(rb->device, REG_CP_RB_WPTR, rb->wptr);
 }
 
+<<<<<<< HEAD
 static void
 adreno_ringbuffer_waitspace(struct adreno_ringbuffer *rb, unsigned int numcmds,
 			  int wptr_ahead)
+=======
+static int
+adreno_ringbuffer_waitspace(struct adreno_ringbuffer *rb,
+				struct adreno_context *context,
+				unsigned int numcmds, int wptr_ahead)
+>>>>>>> thracemerin/m_plus_exp
 {
 	int nopcount;
 	unsigned int freecmds;
@@ -128,6 +135,7 @@ adreno_ringbuffer_waitspace(struct adreno_ringbuffer *rb, unsigned int numcmds,
 		continue;
 
 err:
+<<<<<<< HEAD
 		if (!adreno_dump_and_recover(rb->device))
 				wait_time = jiffies + wait_timeout;
 			else
@@ -141,6 +149,30 @@ unsigned int *adreno_ringbuffer_allocspace(struct adreno_ringbuffer *rb,
 {
 	unsigned int	*ptr = NULL;
 
+=======
+		if (!adreno_dump_and_recover(rb->device)) {
+			if (context && context->flags & CTXT_FLAGS_GPU_HANG) {
+				KGSL_CTXT_WARN(rb->device,
+				"Context %p caused a gpu hang. Will not accept commands for context %d\n",
+				context, context->id);
+				return -EDEADLK;
+			}
+			wait_time = jiffies + wait_timeout;
+		} else {
+			/* GPU is hung and we cannot recover */
+			BUG();
+		}
+	}
+	return 0;
+}
+
+unsigned int *adreno_ringbuffer_allocspace(struct adreno_ringbuffer *rb,
+					struct adreno_context *context,
+					unsigned int numcmds)
+{
+	unsigned int *ptr = NULL;
+	int ret = 0;
+>>>>>>> thracemerin/m_plus_exp
 	BUG_ON(numcmds >= rb->sizedwords);
 
 	GSL_RB_GET_READPTR(rb, &rb->rptr);
@@ -150,6 +182,7 @@ unsigned int *adreno_ringbuffer_allocspace(struct adreno_ringbuffer *rb,
 		/* reserve dwords for nop packet */
 		if ((rb->wptr + numcmds) > (rb->sizedwords -
 				GSL_RB_NOP_SIZEDWORDS))
+<<<<<<< HEAD
 			adreno_ringbuffer_waitspace(rb, numcmds, 1);
 	} else {
 		/* wptr behind rptr */
@@ -164,6 +197,27 @@ unsigned int *adreno_ringbuffer_allocspace(struct adreno_ringbuffer *rb,
 
 	ptr = (unsigned int *)rb->buffer_desc.hostptr + rb->wptr;
 	rb->wptr += numcmds;
+=======
+			ret = adreno_ringbuffer_waitspace(rb, context,
+							numcmds, 1);
+	} else {
+		/* wptr behind rptr */
+		if ((rb->wptr + numcmds) >= rb->rptr)
+			ret = adreno_ringbuffer_waitspace(rb, context,
+							numcmds, 0);
+		/* check for remaining space */
+		/* reserve dwords for nop packet */
+		if (!ret && (rb->wptr + numcmds) > (rb->sizedwords -
+				GSL_RB_NOP_SIZEDWORDS))
+			ret = adreno_ringbuffer_waitspace(rb, context,
+							numcmds, 1);
+	}
+
+	if (!ret) {
+		ptr = (unsigned int *)rb->buffer_desc.hostptr + rb->wptr;
+		rb->wptr += numcmds;
+	}
+>>>>>>> thracemerin/m_plus_exp
 
 	return ptr;
 }
@@ -545,6 +599,7 @@ adreno_ringbuffer_addcmds(struct adreno_ringbuffer *rb,
 		total_sizedwords += 4; /* global timestamp for recovery*/
 	}
 
+<<<<<<< HEAD
 	ringcmds = adreno_ringbuffer_allocspace(rb, total_sizedwords);
 	/* GPU may hang during space allocation, if thats the case the current
 	 * context may have hung the GPU */
@@ -552,6 +607,14 @@ adreno_ringbuffer_addcmds(struct adreno_ringbuffer *rb,
 		KGSL_CTXT_WARN(rb->device,
 		"Context %p caused a gpu hang. Will not accept commands for context %d\n",
 		context, context->id);
+=======
+	ringcmds = adreno_ringbuffer_allocspace(rb, context, total_sizedwords);
+	if (!ringcmds) {
+		/*
+		 * We could not allocate space in ringbuffer, just return the
+		 * last timestamp
+		 */
+>>>>>>> thracemerin/m_plus_exp
 		return rb->timestamp[context_id];
 	}
 
